@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FAF7F4">
+<title>Aura · AI 髮型顧問</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ─── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream:     #FAF7F4;
+  --cream2:    #F5F0EA;
+  --ivory:     #FDF9F5;
+  --warm:      #EDE7DE;
+  --charcoal:  #1C1917;
+  --stone:     #78716C;
+  --dust:      #A8A098;
+  --gold:      #C9A55A;
+  --gold-light:#E8D5A3;
+  --gold-dark: #A0823A;
+  --terracotta:#C27B5A;
+  --sage:      #8A9E89;
+  --blush:     #E8C4B4;
+  --border:    #E5DDD5;
+  --border2:   #D4CAC0;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--charcoal);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Typography ───────────────────────────────────────────── */
+.serif { font-family: 'Cormorant Garamond', serif; }
+
+/* ─── Scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ─── PAGE SYSTEM ──────────────────────────────────────────── */
+.page { display: none; min-height: 100vh; min-height: 100dvh; flex-direction: column; }
+.page.active { display: flex; }
+
+/* ─── HEADER ───────────────────────────────────────────────── */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px;
+  background: var(--ivory);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 50;
+}
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 400; letter-spacing: 0.06em;
+  color: var(--charcoal);
+}
+.logo span { color: var(--gold); font-style: italic; }
+.header-tag {
+  font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--stone); background: var(--warm);
+  padding: 4px 10px; border-radius: 20px;
+}
+
+/* ─── ══════════════════════════════════════════════════════ ─── */
+/*     PAGE 1: UPLOAD                                            */
+/* ─── ══════════════════════════════════════════════════════ ─── */
+#page-upload {
+  background: var(--cream);
+}
+.upload-hero {
+  text-align: center;
+  padding: 40px 28px 28px;
+  position: relative;
+}
+.upload-hero::before {
+  content: '';
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 1px; height: 32px;
+  background: linear-gradient(to bottom, transparent, var(--gold));
+}
+.hero-eyebrow {
+  font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 14px; margin-top: 8px;
+}
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 8vw, 2.8rem);
+  font-weight: 300; line-height: 1.15;
+  color: var(--charcoal); margin-bottom: 12px;
+}
+.hero-title em { font-style: italic; color: var(--terracotta); }
+.hero-sub {
+  font-size: 0.85rem; color: var(--stone); line-height: 1.75;
+  font-weight: 300; max-width: 280px; margin: 0 auto;
+}
+.upload-steps {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; padding: 20px 28px 0;
+}
+.step-item { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+.step-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--ivory);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; color: var(--stone); font-weight: 500;
+}
+.step-circle.active { background: var(--gold); border-color: var(--gold); color: white; }
+.step-label { font-size: 0.6rem; color: var(--stone); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.step-line { height: 1px; background: var(--border); flex: 1; margin-bottom: 22px; max-width: 40px; }
+
+.upload-zone-wrap { padding: 24px 20px; flex: 1; }
+.upload-zone {
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--r-xl);
+  background: var(--ivory);
+  padding: 44px 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative; overflow: hidden;
+}
+.upload-zone.drag-over,
+.upload-zone:hover {
+  border-color: var(--gold);
+  background: var(--cream2);
+}
+.upload-zone::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,165,90,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.upload-icon-wrap {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-light), var(--blush));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; font-size: 1.3rem;
+}
+.upload-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-weight: 400; margin-bottom: 6px;
+}
+.upload-sub { font-size: 0.78rem; color: var(--stone); line-height: 1.65; }
+.upload-cta-btn {
+  margin-top: 20px;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px;
+  background: var(--charcoal); color: var(--cream);
+  border: none; border-radius: var(--r-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s;
+}
+.upload-cta-btn:hover { background: var(--gold); }
+/* Fix: opacity+absolute ensures .click() works on iOS/Android */
+#file-input {
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  top: 0; left: 0;
+}
+
+/* Preview state (inside upload zone) */
+.preview-wrap { display: none; }
+.preview-img {
+  width: 100%; max-width: 260px; height: 300px;
+  object-fit: cover; border-radius: var(--r-lg);
+  display: block; margin: 0 auto 14px;
+  box-shadow: 0 8px 32px rgba(28,25,23,0.12);
+}
+.preview-info {
+  font-size: 0.78rem; color: var(--stone); margin-bottom: 16px;
+}
+.preview-actions { display: flex; gap: 10px; justify-content: center; }
+.btn-analyze {
+  flex: 1; max-width: 200px;
+  padding: 14px 24px;
+  background: var(--charcoal); color: var(--cream);
+  border: none; border-radius: var(--r-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; font-weight: 500; letter-spacing: 0.06em;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-analyze:hover { background: var(--gold); }
+.btn-reupload {
+  padding: 14px 18px;
+  background: transparent; color: var(--stone);
+  border: 1px solid var(--border2); border-radius: var(--r-sm);
+  font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
+  cursor: pointer; transition: all 0.18s;
+}
+.btn-reupload:hover { border-color: var(--stone); color: var(--charcoal); }
+
+/* Upload tips */
+.upload-tips {
+  padding: 0 20px 24px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+}
+.tip {
+  background: var(--ivory); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 12px 10px; text-align: center;
+}
+.tip-icon { font-size: 1.1rem; margin-bottom: 5px; }
+.tip-text { font-size: 0.68rem; color: var(--stone); line-height: 1.5; }
+
+/* ─── ══════════════════════════════════════════════════════ ─── */
+/*     PAGE 2: LOADING                                           */
+/* ─── ══════════════════════════════════════════════════════ ─── */
+#page-loading {
+  background: var(--charcoal);
+  align-items: center; justify-content: center;
+  color: var(--cream);
+  flex-direction: column;
+  gap: 0;
+  padding: 40px 28px;
+}
+.loading-photo-frame {
+  width: 130px; height: 155px;
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  border: 2px solid rgba(201,165,90,0.3);
+  margin-bottom: 32px;
+  position: relative;
+}
+.loading-photo-frame img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.loading-photo-frame::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(28,25,23,0.5));
+}
+.loading-scan-line {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation: scan 2s ease-in-out infinite;
+  z-index: 2;
+}
+@keyframes scan {
+  0%   { top: 0;    opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.loading-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.7rem; font-weight: 300; letter-spacing: 0.02em;
+  margin-bottom: 8px; text-align: center;
+}
+.loading-sublabel {
+  font-size: 0.78rem; color: rgba(250,247,244,0.5);
+  text-align: center; margin-bottom: 36px; letter-spacing: 0.05em;
+}
+.loading-steps { width: 100%; max-width: 300px; }
+.loading-step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.loading-step:last-child { border-bottom: none; }
+.loading-step-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0; transition: all 0.4s;
+}
+.loading-step-dot.done  { background: var(--sage); }
+.loading-step-dot.active {
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+  animation: dotPulse 0.8s ease-in-out infinite;
+}
+@keyframes dotPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.5);} }
+.loading-step-text {
+  font-size: 0.78rem; color: rgba(250,247,244,0.55); flex: 1;
+  transition: color 0.3s;
+}
+.loading-step.active .loading-step-text { color: var(--cream); }
+.loading-step.done .loading-step-text { color: rgba(250,247,244,0.4); }
+.loading-step-check {
+  font-size: 0.7rem; color: var(--sage);
+  opacity: 0; transition: opacity 0.3s;
+  flex-shrink: 0;
+}
+.loading-step.done .loading-step-check { opacity: 1; }
+.loading-progress-bar {
+  width: 100%; max-width: 300px; height: 2px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 1px; margin-top: 28px; overflow: hidden;
+}
+.loading-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--sage), var(--gold));
+  border-radius: 1px; width: 0%;
+  transition: width 0.6s ease;
+}
+
+/* ─── ══════════════════════════════════════════════════════ ─── */
+/*     PAGE 3: RESULT                                            */
+/* ─── ══════════════════════════════════════════════════════ ─── */
+#page-result {
+  background: var(--cream);
+  padding-bottom: 100px; /* space for sticky CTA */
+}
+.result-scroll { flex: 1; overflow-y: auto; }
+
+/* Face Hero */
+.face-hero {
+  background: var(--charcoal);
+  padding: 28px 24px 32px;
+  position: relative; overflow: hidden;
+}
+.face-hero::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,165,90,0.12) 0%, transparent 70%);
+}
+.face-result-label {
+  font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 10px;
+}
+.face-result-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.6rem; font-weight: 300; color: var(--cream);
+  line-height: 1; margin-bottom: 6px;
+}
+.face-result-sub {
+  font-size: 0.78rem; color: rgba(250,247,244,0.45); margin-bottom: 20px;
+}
+.face-traits-row {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+}
+.face-trait {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r-sm); padding: 8px 12px;
+}
+.face-trait-key { font-size: 0.6rem; color: rgba(250,247,244,0.4); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+.face-trait-val { font-size: 0.78rem; color: var(--cream); font-weight: 500; }
+
+/* Confidence bar */
+.confidence-strip {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 24px;
+  background: var(--ivory); border-bottom: 1px solid var(--border);
+}
+.conf-label { font-size: 0.7rem; color: var(--stone); white-space: nowrap; }
+.conf-bar { flex: 1; height: 4px; background: var(--warm); border-radius: 2px; overflow: hidden; }
+.conf-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sage), var(--gold));
+  border-radius: 2px; width: 0%;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+}
+.conf-pct { font-size: 0.7rem; font-weight: 500; color: var(--gold); white-space: nowrap; font-family: 'DM Sans', sans-serif; }
+
+/* Section template */
+.result-section { padding: 22px 20px; border-bottom: 1px solid var(--border); }
+.section-eyebrow {
+  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-weight: 400; margin-bottom: 14px;
+}
+
+/* Hairstyle list */
+.style-list { display: flex; flex-direction: column; gap: 8px; }
+.style-item {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--ivory); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 13px 14px;
+  animation: fadeUp 0.4s ease-out both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.style-item:nth-child(1) { animation-delay: 0.05s; }
+.style-item:nth-child(2) { animation-delay: 0.12s; }
+.style-item:nth-child(3) { animation-delay: 0.19s; }
+.style-rank {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--warm); color: var(--stone);
+  font-size: 0.72rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.style-rank.top { background: var(--gold); color: white; }
+.style-body { flex: 1; }
+.style-name { font-size: 0.88rem; font-weight: 500; margin-bottom: 2px; }
+.style-effect { font-size: 0.72rem; color: var(--stone); }
+.style-score {
+  font-size: 0.7rem; color: var(--gold);
+  font-family: 'DM Sans', sans-serif; font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Color chips */
+.color-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.color-chip {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--ivory); border: 1px solid var(--border);
+  border-radius: 50px; padding: 7px 14px 7px 8px;
+  font-size: 0.78rem;
+  animation: fadeUp 0.4s ease-out both;
+}
+.color-chip:nth-child(1) { animation-delay: 0.05s; }
+.color-chip:nth-child(2) { animation-delay: 0.12s; }
+.color-chip:nth-child(3) { animation-delay: 0.19s; }
+.color-chip:nth-child(4) { animation-delay: 0.26s; }
+.color-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  flex-shrink: 0; border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+/* Avoid list */
+.avoid-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+.avoid-pill {
+  font-size: 0.75rem; padding: 5px 12px;
+  background: #FDF4F0; border: 1px solid #F0CFC0;
+  border-radius: 20px; color: #8B4A35;
+}
+
+/* Report card */
+.report-card {
+  background: var(--ivory); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 18px;
+  margin-top: 0;
+}
+.report-opening {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem; font-weight: 400; font-style: italic;
+  color: var(--terracotta); line-height: 1.7; margin-bottom: 12px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.report-body {
+  font-size: 0.82rem; color: var(--stone); line-height: 1.85;
+  margin-bottom: 12px;
+}
+.report-advice {
+  font-size: 0.82rem; color: var(--charcoal); line-height: 1.85;
+}
+.report-footer {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.report-badge {
+  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--stone); background: var(--warm);
+  padding: 3px 8px; border-radius: 4px;
+}
+.report-time { font-size: 0.68rem; color: var(--dust); margin-left: auto; }
+
+/* Service bundle */
+.service-bundle {
+  background: var(--charcoal); border-radius: var(--r-lg);
+  padding: 20px; margin-top: 0;
+}
+.bundle-label {
+  font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+.bundle-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem; font-weight: 400; color: var(--cream);
+  margin-bottom: 14px;
+}
+.bundle-items { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+.bundle-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.8rem; color: rgba(250,247,244,0.7);
+}
+.bundle-item-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--gold); flex-shrink: 0; margin-top: 6px;
+}
+.bundle-price-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);
+}
+.bundle-price-label { font-size: 0.72rem; color: rgba(250,247,244,0.4); }
+.bundle-price { font-size: 1.1rem; font-weight: 500; color: var(--gold); }
+
+/* ─── STICKY CTA ────────────────────────────────────────────── */
+.sticky-cta {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  padding: 12px 20px 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--cream) 70%, transparent);
+}
+.cta-inner { max-width: 480px; margin: 0 auto; }
+.btn-line {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 17px 24px;
+  background: #06C755; color: white;
+  border: none; border-radius: var(--r-md);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; font-weight: 600; letter-spacing: 0.02em;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(6,199,85,0.35);
+}
+.btn-line:hover { background: #05b04c; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(6,199,85,0.4); }
+.btn-line:active { transform: translateY(0); }
+.btn-line svg { width: 22px; height: 22px; flex-shrink: 0; }
+.cta-note {
+  text-align: center; font-size: 0.68rem; color: var(--stone);
+  margin-top: 7px; letter-spacing: 0.03em;
+}
+.btn-share {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; padding: 12px;
+  background: transparent; color: var(--stone);
+  border: 1px solid var(--border2); border-radius: var(--r-sm);
+  font-family: 'DM Sans', sans-serif; font-size: 0.8rem;
+  cursor: pointer; transition: all 0.18s; margin-top: 8px;
+}
+.btn-share:hover { border-color: var(--stone); color: var(--charcoal); }
+
+/* ─── Toast ─────────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--charcoal); color: var(--cream);
+  padding: 10px 20px; border-radius: 50px;
+  font-size: 0.8rem; white-space: nowrap;
+  opacity: 0; transition: all 0.3s; z-index: 200;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─── Error state ────────────────────────────────────────────── */
+.error-box {
+  background: #FDF4F0; border: 1px solid #F0CFC0;
+  border-radius: var(--r-md); padding: 16px 18px;
+  font-size: 0.82rem; color: #8B4A35; line-height: 1.7;
+  margin: 20px;
+}
+.btn-retry {
+  margin-top: 12px; padding: 10px 22px;
+  background: var(--charcoal); color: var(--cream);
+  border: none; border-radius: var(--r-sm);
+  font-family: 'DM Sans', sans-serif; font-size: 0.78rem;
+  cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+/* ─── Animations ─────────────────────────────────────────────── */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.page-enter { animation: slideIn 0.35s ease-out forwards; }
+
+/* ─── Utility ────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+.mt-0  { margin-top: 0; }
+.mt-8  { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+</style>
+</head>
+
+<body>
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<!--  PAGE 1: UPLOAD                                             -->
+<!-- ──────────────────────────────────────────────────────────── -->
+<div id="page-upload" class="page active">
+  <header class="header">
+    <div class="logo">Aura <span>髮型顧問</span></div>
+    <div class="header-tag">AI 分析</div>
+  </header>
+
+  <div class="upload-hero">
+    <div class="hero-eyebrow">✦ 免費專屬分析</div>
+    <h1 class="hero-title">找到你的<br><em>完美髮型</em></h1>
+    <p class="hero-sub">上傳一張正面照片，AI 分析你的臉型，給你最適合的髮型與髮色建議。</p>
+  </div>
+
+  <div class="upload-steps">
+    <div class="step-item">
+      <div class="step-circle active">1</div>
+      <div class="step-label">上傳照片</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item">
+      <div class="step-circle">2</div>
+      <div class="step-label">AI 分析</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item">
+      <div class="step-circle">3</div>
+      <div class="step-label">獲得建議</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item">
+      <div class="step-circle">4</div>
+      <div class="step-label">預約</div>
+    </div>
+  </div>
+
+  <!-- Fix 1: zero inline events; all bound via addEventListener in DOMContentLoaded -->
+  <div class="upload-zone-wrap">
+    <div class="upload-zone" id="upload-zone">
+
+      <!-- Default state -->
+      <div id="upload-default">
+        <div class="upload-icon-wrap">📸</div>
+        <div class="upload-title serif">上傳你的照片</div>
+        <div class="upload-sub">拖曳或點擊選擇圖片<br>支援 JPG、PNG（最大 10MB）</div>
+        <button class="upload-cta-btn" id="btn-select-photo">
+          選擇照片
+        </button>
+      </div>
+
+      <!-- Preview state -->
+      <div id="upload-preview" class="preview-wrap">
+        <img id="preview-img" class="preview-img" src="" alt="預覽">
+        <div class="preview-info" id="preview-info"></div>
+        <div class="preview-actions">
+          <button class="btn-analyze" id="btn-analyze">
+            開始分析我的臉型 →
+          </button>
+          <button class="btn-reupload" id="btn-reupload">重選</button>
+        </div>
+      </div>
+
+    </div>
+    <div id="upload-error" class="error-box hidden">
+      <span id="upload-error-msg"></span>
+      <br>
+      <button class="btn-retry" id="btn-retry">重新上傳</button>
+    </div>
+  </div>
+
+  <!-- Tips -->
+  <div class="upload-tips">
+    <div class="tip">
+      <div class="tip-icon">☀️</div>
+      <div class="tip-text">光線充足<br>正面照</div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">😊</div>
+      <div class="tip-text">臉部清晰<br>表情自然</div>
+    </div>
+    <div class="tip">
+      <div class="tip-icon">🚫</div>
+      <div class="tip-text">避免帽子<br>或遮臉</div>
+    </div>
+  </div>
+
+  <!-- Fix 2: no inline onchange, accept="image/*" for maximum mobile compatibility -->
+  <input type="file" id="file-input" accept="image/*">
+</div>
+
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<!--  PAGE 2: LOADING                                            -->
+<!-- ──────────────────────────────────────────────────────────── -->
+<div id="page-loading" class="page">
+  <div class="loading-photo-frame">
+    <img id="loading-preview" src="" alt="">
+    <div class="loading-scan-line"></div>
+  </div>
+
+  <div class="loading-label serif">AI 分析中</div>
+  <div class="loading-sublabel">請稍候，通常需要 3–5 秒</div>
+
+  <div class="loading-steps">
+    <div class="loading-step" id="lstep-1">
+      <div class="loading-step-dot"></div>
+      <div class="loading-step-text">上傳圖片處理中…</div>
+      <div class="loading-step-check">✓</div>
+    </div>
+    <div class="loading-step" id="lstep-2">
+      <div class="loading-step-dot"></div>
+      <div class="loading-step-text">AI 臉型特徵分析…</div>
+      <div class="loading-step-check">✓</div>
+    </div>
+    <div class="loading-step" id="lstep-3">
+      <div class="loading-step-dot"></div>
+      <div class="loading-step-text">匹配最適合的髮型…</div>
+      <div class="loading-step-check">✓</div>
+    </div>
+    <div class="loading-step" id="lstep-4">
+      <div class="loading-step-dot"></div>
+      <div class="loading-step-text">生成個人化報告…</div>
+      <div class="loading-step-check">✓</div>
+    </div>
+  </div>
+
+  <div class="loading-progress-bar">
+    <div class="loading-progress-fill" id="loading-progress"></div>
+  </div>
+</div>
+
+
+<!-- ──────────────────────────────────────────────────────────── -->
+<!--  PAGE 3: RESULT                                             -->
+<!-- ──────────────────────────────────────────────────────────── -->
+<div id="page-result" class="page">
+  <header class="header">
+    <div class="logo">Aura <span>髮型顧問</span></div>
+    <button onclick="resetAll()" style="font-size:0.75rem;color:var(--stone);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;" >重新分析</button>
+  </header>
+
+  <!-- Face type hero -->
+  <div class="face-hero">
+    <div class="face-result-label">✦ 你的臉型分析結果</div>
+    <div class="face-result-name serif" id="result-face-name">—</div>
+    <div class="face-result-sub" id="result-face-reason">—</div>
+    <div class="face-traits-row" id="result-traits"></div>
+  </div>
+
+  <!-- Confidence bar -->
+  <div class="confidence-strip">
+    <div class="conf-label">分析信心度</div>
+    <div class="conf-bar"><div class="conf-fill" id="conf-fill"></div></div>
+    <div class="conf-pct" id="conf-pct">—%</div>
+  </div>
+
+  <!-- Section: Hairstyles -->
+  <div class="result-section">
+    <div class="section-eyebrow">最適合你的</div>
+    <div class="section-title serif">推薦髮型</div>
+    <div class="style-list" id="result-styles"></div>
+  </div>
+
+  <!-- Section: Colors -->
+  <div class="result-section">
+    <div class="section-eyebrow">最顯色的選擇</div>
+    <div class="section-title serif">推薦髮色</div>
+    <div class="color-row" id="result-colors"></div>
+  </div>
+
+  <!-- Section: Avoid -->
+  <div class="result-section">
+    <div class="section-eyebrow">建議避免</div>
+    <div class="section-title serif">這些款式</div>
+    <div class="avoid-pills" id="result-avoid"></div>
+  </div>
+
+  <!-- Section: Report -->
+  <div class="result-section">
+    <div class="section-eyebrow">你的專屬</div>
+    <div class="section-title serif">造型分析報告</div>
+    <div class="report-card">
+      <div class="report-opening" id="report-opening">—</div>
+      <div class="report-body" id="report-body">—</div>
+      <div class="report-advice" id="report-advice">—</div>
+      <div class="report-footer">
+        <div class="report-badge">Aura AI</div>
+        <div class="report-time" id="report-time">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Service Bundle -->
+  <div class="result-section">
+    <div class="section-eyebrow">設計師推薦</div>
+    <div class="section-title serif">專屬服務組合</div>
+    <div class="service-bundle">
+      <div class="bundle-label">圓臉黃金造型組合</div>
+      <div class="bundle-name serif" id="bundle-name">—</div>
+      <div class="bundle-items" id="bundle-items"></div>
+      <div class="bundle-price-row">
+        <div class="bundle-price-label">參考價格區間</div>
+        <div class="bundle-price" id="bundle-price">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky CTA -->
+  <div class="sticky-cta">
+    <div class="cta-inner">
+      <button class="btn-line" id="btn-line-cta" onclick="openLine()">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.494.254l2.444 3.317V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+        </svg>
+        用 LINE 預約這個造型
+      </button>
+      <button class="btn-share" onclick="shareResult()">
+        分享給朋友看看
+      </button>
+      <div class="cta-note" id="cta-note">點擊後開啟 LINE，自動帶入你的分析結果</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+
+<script>
+// ─── CONFIG ─────────────────────────────────────────────────────────────────
+const CONFIG = {
+  API_URL:    'http://localhost:3001', // ← 換成你的 Railway 後端網址
+  LINE_ID:    '@your_salon_id',        // ← 換成你的 LINE 官方帳號 ID
+  SALON_NAME: 'Aura Hair Salon',
+};
+
+// ─── HAIR RULES (fallback when API unavailable) ──────────────────────────────
+const HAIR_RULES = {
+  圓臉: {
+    emoji: '◯',
+    reason: '顴骨較寬、下巴圓潤，臉部長寬比接近 1:1',
+    traits: { '下巴線條': '圓潤', '顴骨寬度': '較寬', '臉長寬比': '≈1:1', '整體感': '柔和' },
+    styles: [
+      { name: '層次中長髮', effect: '拉長臉型', score: 96 },
+      { name: '側分顯瘦直髮', effect: '視覺瘦臉', score: 91 },
+      { name: '不對稱剪裁', effect: '打破對稱感', score: 87 },
+    ],
+    colors: [
+      { name: '冷棕色', hex: '#6B4226' }, { name: '灰棕色', hex: '#8B7355' },
+      { name: '暗栗色', hex: '#5C3317' }, { name: '深莓紅', hex: '#722F37' },
+    ],
+    avoid: ['齊平瀏海', '短鮑伯', '圓弧捲髮', '中分齊短髮'],
+    bundle: { name: '圓臉顯瘦黃金組合', items: ['層次中長髮修剪（專為修飾圓臉設計）', '冷棕色染髮（視覺收縮，顯臉小）', '染後護髮療程（鎖色保濕）'], price: '$3,100 – 5,800' },
+    report: { opening: '你的圓潤臉形散發著自然親切的魅力，這樣的輪廓在鏡頭前尤其上相，不少知名藝人都擁有相似的臉形。', body: '根據分析，你的顴骨寬度適中偏寬，下巴線條圓潤自然，整體長寬比接近 1:1。這樣的輪廓最需要在視覺上製造縱向的延伸感，讓臉形看起來更加立體而精緻。', advice: '強烈建議選擇有層次感的中長髮，搭配側分造型。冷色調棕色系能產生視覺收縮效果，讓臉形看起來更加精緻小巧。' },
+  },
+  方臉: {
+    emoji: '□',
+    reason: '下巴線條方正有稜角，額頭、顴骨、下巴寬度相近',
+    traits: { '下巴線條': '方正稜角', '顴骨寬度': '與額同寬', '臉長寬比': '≈1:1', '整體感': '剛毅' },
+    styles: [
+      { name: '柔波浪中長髮', effect: '柔化稜角', score: 95 },
+      { name: '斜瀏海造型', effect: '打破對稱感', score: 90 },
+      { name: '碎髮層次短髮', effect: '增加柔和感', score: 85 },
+    ],
+    colors: [
+      { name: '蜂蜜金', hex: '#D4A017' }, { name: '焦糖棕', hex: '#A0522D' },
+      { name: '玫瑰棕', hex: '#A0695B' }, { name: '暖栗色', hex: '#8B4513' },
+    ],
+    avoid: ['超直鮑伯', '中分直髮', '齊耳短髮', '方形瀏海'],
+    bundle: { name: '方臉柔化造型組合', items: ['柔波浪中長髮修剪（柔化稜角設計）', '蜂蜜金染髮（暖色系增加柔美感）', '電棒捲燙定型'], price: '$3,500 – 6,200' },
+    report: { opening: '你的方臉輪廓線條俐落有型，是最具時尚感的臉形之一，在造型設計上擁有極大的可塑性。', body: '你的下巴線條方正，額頭、顴骨與下巴的寬度相近，形成強而有力的臉部輪廓。這樣的臉形最適合透過柔和的波浪線條來平衡稜角，增加女性柔美氣質。', advice: '建議選擇有波浪感的中長髮，或加入斜瀏海打破額頭的方正感。暖色系的蜂蜜金或焦糖棕能為整體造型增加溫暖柔和的氛圍。' },
+  },
+  長臉: {
+    emoji: '▯',
+    reason: '臉部高寬比超過 1.4:1，額頭偏高，下巴較長',
+    traits: { '臉長寬比': '≥1.4:1', '額頭高度': '偏高', '下巴長度': '較長', '整體感': '修長' },
+    styles: [
+      { name: '齊平瀏海鮑伯', effect: '縮短臉長', score: 97 },
+      { name: '空氣感捲髮', effect: '增加橫向寬度', score: 93 },
+      { name: 'C字捲中長髮', effect: '視覺增寬', score: 88 },
+    ],
+    colors: [
+      { name: '亮金棕', hex: '#C8860A' }, { name: '暖橘棕', hex: '#B5651D' },
+      { name: '草莓棕', hex: '#9E4B4B' }, { name: '亮栗色', hex: '#954535' },
+    ],
+    avoid: ['直長髮', '高馬尾', '中長直髮', '過平整無層次'],
+    bundle: { name: '長臉均衡造型組合', items: ['齊平瀏海修剪（縮短額頭比例）', '亮金棕染髮（增加橫向視覺寬度）', '空氣感燙捲造型'], price: '$3,200 – 5,500' },
+    report: { opening: '你的長臉輪廓優雅迷人，像極了時尚雜誌的模特兒，是最容易駕馭長髮造型的臉形。', body: '你的臉部長寬比超過 1.4:1，額頭偏高，整體輪廓修長優雅。這樣的臉形在視覺上需要增加橫向的寬度感，讓臉部比例看起來更加均衡飽滿。', advice: '齊平瀏海是長臉最強力的修飾武器，能立即縮短視覺上的額頭高度。搭配空氣感的捲髮或 C 字捲，能有效增加臉部兩側的蓬鬆感。' },
+  },
+  鵝蛋臉: {
+    emoji: '⬭',
+    reason: '臉部長寬比約 1.3:1，下巴微圓收斂，整體比例均衡',
+    traits: { '臉長寬比': '≈1.3:1', '下巴線條': '微圓收斂', '整體比例': '均衡', '整體感': '完美' },
+    styles: [
+      { name: '中分長直髮', effect: '展現完美輪廓', score: 98 },
+      { name: '法式蓬鬆捲', effect: '優雅浪漫', score: 94 },
+      { name: '俐落短鮑伯', effect: '都市摩登感', score: 90 },
+    ],
+    colors: [
+      { name: '白金金屬色', hex: '#D4CFC4' }, { name: '巧克力棕', hex: '#5C3317' },
+      { name: '冷灰棕', hex: '#7D7068' }, { name: '任意色系', hex: '#888888' },
+    ],
+    avoid: ['無特殊禁忌', '過度複雜款式'],
+    bundle: { name: '鵝蛋臉全能造型組合', items: ['個人化髮型設計（任意款式皆宜）', '白金金屬色或個人喜好染色', '染後修護護髮療程'], price: '$2,800 – 6,000' },
+    report: { opening: '恭喜你擁有被公認為最完美的鵝蛋臉形！幾乎能駕馭任何髮型，你的可塑性讓每位設計師都躍躍欲試。', body: '你的臉部長寬比約在 1.3:1 左右，接近黃金比例，下巴線條微圓而收斂，整體輪廓均衡而優雅。', advice: '由於你的臉形幾乎沒有限制，建議根據個人風格與場合來選擇造型。想優雅選中分長直髮；想浪漫試法式蓬鬆捲；想俐落短鮑伯也非常適合你。' },
+  },
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let currentFile   = null;
+let currentResult = null;
+let loadingTimer  = null;
+
+// ─── FIX 6: ALL EVENT BINDING inside DOMContentLoaded ────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+  console.log('[Aura] DOMContentLoaded fired — binding events');
+
+  const fileInput      = document.getElementById('file-input');
+  const uploadZone     = document.getElementById('upload-zone');
+  const btnSelectPhoto = document.getElementById('btn-select-photo');
+  const btnReupload    = document.getElementById('btn-reupload');
+  const btnRetry       = document.getElementById('btn-retry');
+  const btnAnalyze     = document.getElementById('btn-analyze');
+
+  // ── Fix 6a: upload-zone click → open file picker ──────────────────────────
+  uploadZone.addEventListener('click', function (e) {
+    // Don't double-fire if the click came from a button inside the zone
+    if (e.target === btnAnalyze || e.target === btnReupload) return;
+    console.log('[Aura] uploadZone clicked → triggering fileInput.click()');
+    fileInput.click();
+  });
+
+  // ── Fix 6b: "選擇照片" button (stopPropagation then trigger) ───────────────
+  btnSelectPhoto.addEventListener('click', function (e) {
+    e.stopPropagation(); // prevent zone's click handler from also firing
+    console.log('[Aura] btnSelectPhoto clicked → triggering fileInput.click()');
+    fileInput.click();
+  });
+
+  // ── Fix 6c: file input change ─────────────────────────────────────────────
+  fileInput.addEventListener('change', function (e) {
+    console.log('[Aura] fileInput change event fired, files:', e.target.files);
+    const file = e.target.files && e.target.files[0];
+    if (file) {
+      processFile(file);
+    } else {
+      console.warn('[Aura] No file in change event');
+    }
+  });
+
+  // ── Drag & drop ───────────────────────────────────────────────────────────
+  uploadZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    uploadZone.classList.add('drag-over');
+  });
+  uploadZone.addEventListener('dragleave', function () {
+    uploadZone.classList.remove('drag-over');
+  });
+  uploadZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    console.log('[Aura] drop event, file:', file);
+    if (file) processFile(file);
+  });
+
+  // ── Other buttons ─────────────────────────────────────────────────────────
+  if (btnReupload) btnReupload.addEventListener('click', function (e) { e.stopPropagation(); resetUpload(); });
+  if (btnRetry)    btnRetry.addEventListener('click', function (e)    { e.stopPropagation(); resetUpload(); });
+  if (btnAnalyze)  btnAnalyze.addEventListener('click', function (e)  { e.stopPropagation(); startAnalysis(); });
+
+  console.log('[Aura] All events bound successfully');
+  logEvent('page_view');
+});
+
+// ─── FIX 3+4+5: processFile with correct validation, guaranteed preview, debug ─
+function processFile(file) {
+  console.log('[Aura] processFile() called, file:', file); // Fix 5
+
+  // Fix 3: use startsWith instead of includes for reliable type check
+  if (!file.type.startsWith('image/')) {
+    console.warn('[Aura] Rejected file type:', file.type);
+    showUploadError('請上傳圖片格式（JPG、PNG 等）');
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    console.warn('[Aura] File too large:', file.size);
+    showUploadError('圖片太大了，請上傳 10MB 以下的圖片');
+    return;
+  }
+
+  currentFile = file;
+  document.getElementById('upload-error').classList.add('hidden');
+
+  const reader = new FileReader();
+
+  // Fix 4: guaranteed to set src and switch states in onload
+  reader.onload = function (e) {
+    console.log('[Aura] FileReader onload fired'); // Fix 5
+
+    const imgSrc = e.target.result;
+    console.log('[Aura] imgSrc length:', imgSrc ? imgSrc.length : 0);
+
+    // Fix 4a: set the preview image src
+    const previewImg   = document.getElementById('preview-img');
+    const loadingPrev  = document.getElementById('loading-preview');
+    previewImg.src   = imgSrc;
+    loadingPrev.src  = imgSrc;
+    console.log('[Aura] preview-img src set');
+
+    // Fix 4b: set file info text
+    const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+    document.getElementById('preview-info').textContent = file.name + '  ·  ' + sizeMB + 'MB';
+
+    // Fix 4c: switch display states — this is the critical fix
+    document.getElementById('upload-default').style.display  = 'none';
+    document.getElementById('upload-preview').style.display  = 'block';
+    console.log('[Aura] Switched to preview state ✓');
+
+    // Reset file input so same file can be re-selected
+    document.getElementById('file-input').value = '';
+  };
+
+  reader.onerror = function (err) {
+    console.error('[Aura] FileReader error:', err);
+    showUploadError('讀取圖片失敗，請重試');
+  };
+
+  console.log('[Aura] Calling reader.readAsDataURL()');
+  reader.readAsDataURL(file);
+}
+
+// ─── PAGE NAVIGATION ─────────────────────────────────────────────────────────
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+  var page = document.getElementById(pageId);
+  page.classList.add('active');
+  if (pageId !== 'page-loading') {
+    page.classList.add('page-enter');
+    setTimeout(function () { page.classList.remove('page-enter'); }, 400);
+  }
+  window.scrollTo(0, 0);
+}
+
+// ─── ANALYSIS ────────────────────────────────────────────────────────────────
+async function startAnalysis() {
+  if (!currentFile) {
+    console.warn('[Aura] startAnalysis called but no currentFile');
+    return;
+  }
+  console.log('[Aura] startAnalysis() → switching to loading page');
+  showPage('page-loading');
+  animateLoadingSteps();
+
+  try {
+    const result = await callAnalyzeAPI(currentFile);
+    currentResult = result;
+    clearTimeout(loadingTimer);
+    await completeLoadingAnimation();
+    renderResult(result);
+    showPage('page-result');
+  } catch (err) {
+    console.warn('[Aura] API call failed, using demo fallback:', err.message);
+    clearTimeout(loadingTimer);
+    const shapes     = ['圓臉', '方臉', '長臉', '鵝蛋臉'];
+    const demoShape  = shapes[Math.floor(Math.random() * shapes.length)];
+    const demoResult = buildDemoResult(demoShape);
+    currentResult    = demoResult;
+    await completeLoadingAnimation();
+    renderResult(demoResult);
+    showPage('page-result');
+    showToast('使用示範模式（後端連線中）');
+  }
+}
+
+async function callAnalyzeAPI(file) {
+  const formData = new FormData();
+  formData.append('photo', file);
+  formData.append('lifestyle', 'casual');
+
+  const response = await fetch(CONFIG.API_URL + '/api/analyze', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(function () { return {}; });
+    throw new Error(err.error || 'HTTP ' + response.status);
+  }
+  return await response.json();
+}
+
+function buildDemoResult(faceShape) {
+  const rules = HAIR_RULES[faceShape];
+  return {
+    success: true,
+    faceAnalysis: {
+      faceShape:    faceShape,
+      confidence:   Math.floor(Math.random() * 15) + 78,
+      traits:       rules.traits,
+      analysisNote: rules.reason,
+    },
+    hairstyleRecommendations: rules.styles,
+    hairColorSuggestions:     rules.colors,
+    avoidList:   { hairstyles: rules.avoid },
+    reportText:  rules.report,
+    bookingCTA: {
+      serviceBundle: {
+        recommended: {
+          name:          rules.bundle.name,
+          services:      rules.bundle.items.map(function (i) { return { name: i }; }),
+          totalPriceMin: 2800,
+          totalPriceMax: 5500,
+        }
+      }
+    },
+    metadata: { generatedAt: new Date().toISOString() },
+  };
+}
+
+// ─── LOADING ANIMATION ────────────────────────────────────────────────────────
+function animateLoadingSteps() {
+  var steps     = ['lstep-1', 'lstep-2', 'lstep-3', 'lstep-4'];
+  var durations = [400, 1000, 700, 600];
+
+  function activateStep(index) {
+    if (index >= steps.length) return;
+    var el = document.getElementById(steps[index]);
+    el.classList.add('active');
+    el.querySelector('.loading-step-dot').classList.add('active');
+
+    var pct = Math.round((index + 1) / steps.length * 85);
+    document.getElementById('loading-progress').style.width = pct + '%';
+
+    loadingTimer = setTimeout(function () {
+      el.classList.remove('active');
+      el.classList.add('done');
+      el.querySelector('.loading-step-dot').classList.remove('active');
+      el.querySelector('.loading-step-dot').classList.add('done');
+      activateStep(index + 1);
+    }, durations[index]);
+  }
+  activateStep(0);
+}
+
+async function completeLoadingAnimation() {
+  document.getElementById('loading-progress').style.width = '100%';
+  document.querySelectorAll('.loading-step').forEach(function (s) {
+    s.classList.remove('active');
+    s.classList.add('done');
+    s.querySelector('.loading-step-dot').classList.add('done');
+  });
+  await new Promise(function (r) { setTimeout(r, 400); });
+}
+
+// ─── RENDER RESULT ────────────────────────────────────────────────────────────
+function renderResult(data) {
+  var face       = data.faceAnalysis || {};
+  var faceShape  = face.faceShape  || '未知';
+  var confidence = face.confidence || 80;
+  var traits     = face.traits     || {};
+
+  document.getElementById('result-face-name').textContent   = faceShape;
+  document.getElementById('result-face-reason').textContent = face.analysisNote || '';
+
+  var traitsEl = document.getElementById('result-traits');
+  traitsEl.innerHTML = '';
+  Object.entries(traits).slice(0, 4).forEach(function (entry) {
+    traitsEl.innerHTML += '<div class="face-trait"><div class="face-trait-key">' + entry[0] + '</div><div class="face-trait-val">' + entry[1] + '</div></div>';
+  });
+
+  setTimeout(function () {
+    document.getElementById('conf-fill').style.width = confidence + '%';
+    document.getElementById('conf-pct').textContent  = confidence + '%';
+  }, 300);
+
+  var stylesEl = document.getElementById('result-styles');
+  stylesEl.innerHTML = '';
+  var styles = data.hairstyleRecommendations || (HAIR_RULES[faceShape] && HAIR_RULES[faceShape].styles) || [];
+  styles.slice(0, 3).forEach(function (s, i) {
+    var name   = s.name   || s;
+    var effect = s.effect || '';
+    var score  = s.suitabilityScore || s.score || '';
+    stylesEl.innerHTML += '<div class="style-item"><div class="style-rank ' + (i === 0 ? 'top' : '') + '">' + (i + 1) + '</div><div class="style-body"><div class="style-name">' + name + '</div><div class="style-effect">' + effect + '</div></div>' + (score ? '<div class="style-score">' + score + '分</div>' : '') + '</div>';
+  });
+
+  var colorsEl = document.getElementById('result-colors');
+  colorsEl.innerHTML = '';
+  var colors = data.hairColorSuggestions || (HAIR_RULES[faceShape] && HAIR_RULES[faceShape].colors) || [];
+  colors.slice(0, 4).forEach(function (c) {
+    colorsEl.innerHTML += '<div class="color-chip"><div class="color-dot" style="background:' + (c.hex || '#888') + '"></div>' + (c.name || c) + '</div>';
+  });
+
+  var avoidEl = document.getElementById('result-avoid');
+  avoidEl.innerHTML = '';
+  var avoidList = (data.avoidList && data.avoidList.hairstyles) || (HAIR_RULES[faceShape] && HAIR_RULES[faceShape].avoid) || [];
+  avoidList.forEach(function (a) {
+    avoidEl.innerHTML += '<span class="avoid-pill">✕ ' + a + '</span>';
+  });
+
+  var report     = data.reportText || {};
+  var ruleReport = (HAIR_RULES[faceShape] && HAIR_RULES[faceShape].report) || {};
+  document.getElementById('report-opening').textContent = report.opening   || ruleReport.opening || '';
+  document.getElementById('report-body').textContent    = report.analysis  || ruleReport.body    || '';
+  document.getElementById('report-advice').textContent  = report.coreAdvice || report.advice || ruleReport.advice || '';
+
+  var ts = (data.metadata && data.metadata.generatedAt) ? new Date(data.metadata.generatedAt) : new Date();
+  document.getElementById('report-time').textContent = ts.toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  var ruleBundle = HAIR_RULES[faceShape] && HAIR_RULES[faceShape].bundle;
+  var bundle = (data.bookingCTA && data.bookingCTA.serviceBundle && data.bookingCTA.serviceBundle.recommended) ||
+    { name: ruleBundle && ruleBundle.name, services: ruleBundle && ruleBundle.items && ruleBundle.items.map(function (i) { return { name: i }; }), totalPriceMin: 2800, totalPriceMax: 5500 };
+
+  document.getElementById('bundle-name').textContent = bundle.name || (faceShape + '專屬造型組合');
+
+  var bundleItemsEl = document.getElementById('bundle-items');
+  bundleItemsEl.innerHTML = '';
+  (bundle.services || []).slice(0, 4).forEach(function (s) {
+    bundleItemsEl.innerHTML += '<div class="bundle-item"><div class="bundle-item-dot"></div><span>' + (s.name || s.description || s) + '</span></div>';
+  });
+
+  var priceMin = bundle.totalPriceMin || 2800;
+  var priceMax = bundle.totalPriceMax || 5500;
+  document.getElementById('bundle-price').textContent = '$' + priceMin.toLocaleString() + ' – ' + priceMax.toLocaleString();
+
+  var topStyle = (styles[0] && styles[0].name) || '推薦造型';
+  document.getElementById('cta-note').textContent = '告訴設計師：' + faceShape + '・' + topStyle + '・點此報告';
+}
+
+// ─── LINE CTA ─────────────────────────────────────────────────────────────────
+function openLine() {
+  if (!currentResult) return;
+
+  var face   = (currentResult.faceAnalysis && currentResult.faceAnalysis.faceShape) || '未知';
+  var styles = currentResult.hairstyleRecommendations || [];
+  var style1 = (styles[0] && styles[0].name) || '';
+  var style2 = (styles[1] && styles[1].name) || '';
+  var colors = currentResult.hairColorSuggestions || [];
+  var color1 = (colors[0] && colors[0].name) || '';
+
+  var msg = encodeURIComponent(
+    '嗨！我剛用 Aura AI 做了髮型分析 ✨\n\n' +
+    '分析結果：' + face + '\n' +
+    '推薦造型：' + style1 + (style2 ? ' / ' + style2 : '') + '\n' +
+    '推薦髮色：' + color1 + '\n\n' +
+    '想詢問這個造型的預約時間和價格，謝謝！'
+  );
+
+  var lineUrl = 'https://line.me/R/oaMessage/' + encodeURIComponent(CONFIG.LINE_ID) + '/?' + msg;
+  logEvent('line_cta_click', { faceShape: face });
+  window.open(lineUrl, '_blank');
+}
+
+// ─── SHARE ───────────────────────────────────────────────────────────────────
+async function shareResult() {
+  if (!currentResult) return;
+  var face = (currentResult.faceAnalysis && currentResult.faceAnalysis.faceShape) || '';
+  var url  = window.location.href;
+  var text = '我用 AI 分析出我是「' + face + '」！快來試試你是什麼臉型 👇';
+
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Aura AI 髮型分析', text: text, url: url }); }
+    catch (e) { /* user cancelled */ }
+  } else {
+    try {
+      await navigator.clipboard.writeText(text + '\n' + url);
+      showToast('已複製連結！');
+    } catch (e) { showToast('複製失敗，請手動複製網址'); }
+  }
+}
+
+// ─── RESET ────────────────────────────────────────────────────────────────────
+function resetUpload() {
+  console.log('[Aura] resetUpload()');
+  currentFile = null;
+  document.getElementById('preview-img').src  = '';
+  document.getElementById('file-input').value = '';
+  document.getElementById('upload-default').style.display  = 'block';
+  document.getElementById('upload-preview').style.display  = 'none';
+  document.getElementById('upload-error').classList.add('hidden');
+}
+
+function resetAll() {
+  console.log('[Aura] resetAll()');
+  currentFile   = null;
+  currentResult = null;
+  document.getElementById('preview-img').src  = '';
+  document.getElementById('file-input').value = '';
+  document.getElementById('upload-default').style.display  = 'block';
+  document.getElementById('upload-preview').style.display  = 'none';
+  document.getElementById('upload-error').classList.add('hidden');
+  document.querySelectorAll('.loading-step').forEach(function (s) {
+    s.classList.remove('active', 'done');
+    s.querySelector('.loading-step-dot').classList.remove('active', 'done');
+  });
+  document.getElementById('loading-progress').style.width = '0%';
+  showPage('page-upload');
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function showUploadError(msg) {
+  document.getElementById('upload-error-msg').textContent = msg;
+  document.getElementById('upload-error').classList.remove('hidden');
+}
+
+function showToast(msg, duration) {
+  duration = duration || 2500;
+  var toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(function () { toast.classList.remove('show'); }, duration);
+}
+
+function logEvent(event, data) {
+  data = data || {};
+  fetch(CONFIG.API_URL + '/log', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ event: event, ts: Date.now() }, data)),
+  }).catch(function () {});
+}
+</script>
+
+
+
+</body>
+</html>
